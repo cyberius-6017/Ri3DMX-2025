@@ -8,10 +8,15 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.IntakeControlCommand;
 import frc.robot.commands.PivotPercentageCommand;
 import frc.robot.constants.IOConstants;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.PivotConstants;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
+import frc.robot.utils.GamepadAxisButton;
 
 public class RobotContainer {
 
@@ -19,10 +24,12 @@ public class RobotContainer {
   private final XboxController placerJoystick;
 
   private final Pivot pivot;
+  private final Intake intake;
 
   public RobotContainer() {
 
     pivot = Pivot.getInstance();
+    intake = Intake.getInstance();
 
     driverJoystick = new XboxController(IOConstants.driverJoystickPort);
     placerJoystick = new XboxController(IOConstants.placerJoystickPort);
@@ -36,9 +43,32 @@ public class RobotContainer {
         new PivotPercentageCommand(
             pivot,
             () -> placerJoystick.getRawAxis(0) * PivotConstants.maxPercentageOutput));
+
+    new GamepadAxisButton(this::leftTriggerThresholdSupplier)
+        .whileTrue(
+            new IntakeControlCommand(
+                intake,
+                () -> placerJoystick.getRawAxis(IOConstants.leftTrigger),
+                true));
+    
+                new GamepadAxisButton(this::rightTriggerThresholdSupplier)
+      .whileTrue(
+        new IntakeControlCommand(
+          intake, 
+          () -> placerJoystick.getRawAxis(IOConstants.rightTrigger), 
+          false)
+      );
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  public Boolean leftTriggerThresholdSupplier() {
+    return Math.abs(placerJoystick.getRawAxis(IOConstants.leftTrigger)) > IntakeConstants.joystickThreshold;
+  }
+
+  public Boolean rightTriggerThresholdSupplier(){
+    return Math.abs(placerJoystick.getRawAxis(IOConstants.rightTrigger)) > IntakeConstants.joystickThreshold;
   }
 }

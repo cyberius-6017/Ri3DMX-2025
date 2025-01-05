@@ -1,5 +1,8 @@
 package frc.robot.commands;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.subsystems.Intake;
+
+import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,13 +10,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 
 public class IntakeControlCommand extends Command{
-
-    private final Intake intakeSubsystem;
-    private final XboxController controller;
     
-    public IntakeControlCommand(Intake intakeSubsystem, XboxController controller) {
+    private final Intake intakeSubsystem;
+    private final Supplier<Double> speedSupplier;
+    private final Boolean intake;
+    
+    public IntakeControlCommand(Intake intakeSubsystem, Supplier<Double> speed, Boolean intake) {
         this.intakeSubsystem = intakeSubsystem;
-        this.controller =  controller;
+        this.speedSupplier = speed;
+        this.intake = intake;
     }
 
     public void initialize(){
@@ -23,19 +28,11 @@ public class IntakeControlCommand extends Command{
 
     public void execute(){
         //Left trigger for reverse intake
+        double speed = speedSupplier.get();
+        double out_speed = intake ? speed : -1 * speed;
 
-        double leftTrigger = controller.getLeftTriggerAxis();
-        double rightTrigger =  controller.getRightTriggerAxis(); 
+        intakeSubsystem.runIntake(out_speed);
 
-        if(leftTrigger > 0.1){
-            intakeSubsystem.runIntake(-leftTrigger);
-        }
-        else if(rightTrigger > 0.1){
-            intakeSubsystem.runIntake(rightTrigger);
-        }
-        else{
-            intakeSubsystem.stopIntake();
-        }
     }
 
     public void end(boolean interrupted){
