@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.PivotPercentageCommand;
@@ -14,8 +15,8 @@ import frc.robot.subsystems.Pivot;
 
 public class RobotContainer {
 
-  private final Joystick driverJoystick;
-  private final Joystick placerJoystick;
+  private final XboxController driverJoystick;
+  private final XboxController placerJoystick;
 
   private final Pivot pivot;
 
@@ -23,11 +24,10 @@ public class RobotContainer {
 
     pivot = Pivot.getInstance();
 
-    driverJoystick = new Joystick(IOConstants.driverJoystickPort);
-    placerJoystick = new Joystick(IOConstants.placerJoystickPort);
+    driverJoystick = new XboxController(IOConstants.driverJoystickPort);
+    placerJoystick = new XboxController(IOConstants.placerJoystickPort);
 
     configureBindings();
-
   }
 
   private void configureBindings() {
