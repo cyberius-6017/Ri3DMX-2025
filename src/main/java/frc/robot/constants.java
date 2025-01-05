@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 public class constants {
     
 
@@ -8,10 +10,32 @@ public class constants {
         public static final double positionConversionFactor = Math.PI * 2;
 
         public static final double maxPercentageOutput = 0.3;
+
+        public static final int motor1Port = 0;
+        public static final int motor2Port = 0;
+
+        public static final boolean motor1Inverted = false;
+
+        public static final double maxVelocity = 2;
+        public static final double maxAcceleration = 2;
+        
+        public static final TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+
+
     }
 
     public static final class IntakeConstants{
+
+        public static final double motorPort = 0;
+
         public static final double joystickThreshold = 0.1;
+
+        public static final boolean motorInverted = false;
     }
 
     public static final class IOConstants {
@@ -22,6 +46,23 @@ public class constants {
         public static final int leftTrigger = 2;
         public static final int rightTrigger = 3; 
 
+    }
+
+    public static final class WristConstants {
+
+        public static final int motorPort = 0;
+
+        public static final boolean motorInverted = false;
+        public static final double maxVelocity = 2;
+        public static final double maxAcceleration = 2;
+
+        public static final TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration);
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        public static final double positionConversionFactor = 0.0;
     }
 
     

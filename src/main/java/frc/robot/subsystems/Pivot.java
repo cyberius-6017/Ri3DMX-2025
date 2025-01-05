@@ -25,24 +25,29 @@ public class Pivot extends SubsystemBase {
 
     public Pivot() {
 
-        motor1 = new SparkMax(0, MotorType.kBrushless);
-        motor2 = new SparkMax(1, MotorType.kBrushless);
+        motor1 = new SparkMax(PivotConstants.motor1Port , MotorType.kBrushless);
+        motor2 = new SparkMax(PivotConstants.motor2Port, MotorType.kBrushless);
 
-        motor1.setInverted(false);
+        motor1.setInverted(PivotConstants.motor1Inverted);
         motor2.setInverted(motor1.getInverted());
 
-        pidController = new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(2, 2));
+        pidController = new ProfiledPIDController(
+            PivotConstants.kP, 
+            PivotConstants.kI, 
+            PivotConstants.kD, 
+            PivotConstants.pidConstraints);
 
         absoluteEncoder = motor1.getAbsoluteEncoder();
 
         encoder1 = motor1.getEncoder();
         encoder2 = motor2.getEncoder();
 
-        encoder1.setPosition(0);
-        encoder2.setPosition(0);
-
+        resetEncoders();
     }
-
+    /**
+     * Function to make this class a Singleton
+     * @return the instance of the class
+     */
     public static Pivot getInstance() {
         if (instance == null) {
             instance = new Pivot();

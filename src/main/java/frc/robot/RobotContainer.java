@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeControlCommand;
 import frc.robot.commands.PivotPercentageCommand;
+import frc.robot.commands.WristPercentageCommand;
 import frc.robot.constants.IOConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.PivotConstants;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Wrist;
 import frc.robot.utils.GamepadAxisButton;
 
 public class RobotContainer {
@@ -25,11 +27,13 @@ public class RobotContainer {
 
   private final Pivot pivot;
   private final Intake intake;
+  private final Wrist wrist;
 
   public RobotContainer() {
 
     pivot = Pivot.getInstance();
     intake = Intake.getInstance();
+    wrist = Wrist.getInstance();
 
     driverJoystick = new XboxController(IOConstants.driverJoystickPort);
     placerJoystick = new XboxController(IOConstants.placerJoystickPort);
@@ -43,7 +47,12 @@ public class RobotContainer {
         new PivotPercentageCommand(
             pivot,
             () -> placerJoystick.getRawAxis(0) * PivotConstants.maxPercentageOutput));
-
+    
+    wrist.setDefaultCommand(
+      new WristPercentageCommand(
+        wrist, 
+        () -> placerJoystick.getRawAxis(0))
+    );
     new GamepadAxisButton(this::leftTriggerThresholdSupplier)
         .whileTrue(
             new IntakeControlCommand(
