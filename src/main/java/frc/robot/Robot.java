@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -12,11 +16,25 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+
+  VictorSPX rightBack = new VictorSPX(10);
+  VictorSPX rightFront = new VictorSPX(20);
+  VictorSPX leftBack = new VictorSPX(30);
+  VictorSPX leftFront = new VictorSPX(40);
+
+  Joystick control = new Joystick(0);
+
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
-  public Robot() {}
+  public Robot() {
+    rightBack.setInverted(leftBack.getInverted());
+    rightFront.setInverted(leftBack.getInverted());
+    leftBack.setInverted(true);
+    leftFront.setInverted(true);
+  }
 
   @Override
   public void robotPeriodic() {}
@@ -28,10 +46,17 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+
+  }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    rightBack.set(VictorSPXControlMode.PercentOutput, control.getRawAxis(5)*0.5);
+    rightFront.set(VictorSPXControlMode.PercentOutput, control.getRawAxis(5)*0.5);
+    leftBack.set(VictorSPXControlMode.PercentOutput, control.getRawAxis(1)*0.5);
+    leftFront.set(VictorSPXControlMode.PercentOutput, control.getRawAxis(1)*0.5);
+  }
 
   @Override
   public void disabledInit() {}
