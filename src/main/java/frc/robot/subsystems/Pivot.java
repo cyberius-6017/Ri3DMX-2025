@@ -99,7 +99,7 @@ public class Pivot extends SubsystemBase {
     /**
      * Stops all the motors
      */
-    public void stopMotors(){
+    public void stop(){
         motor1.stopMotor();
         motor2.stopMotor();
     }
