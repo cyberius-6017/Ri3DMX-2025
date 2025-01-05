@@ -1,24 +1,26 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveTrain;
+
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class DriveTrainCommand extends Command {
     private final DriveTrain driveTrainSubsystem;
-    private final  double leftSpeed;
-    private final  double rightSpeed;
+    private final  Supplier<Double> leftSpeedSupplier, rightSpeedSupplier;
 
-    public DriveTrainCommand(){
+    public DriveTrainCommand(DriveTrain driveTrainSubsystem, Supplier<Double> leftSpeedSupplier, Supplier<Double> rightSpeedSupplier){
         this.driveTrainSubsystem =  driveTrainSubsystem;
-        this.rightSpeed = rightSpeed;
-        this.leftSpeed = leftSpeed;
+        this.rightSpeedSupplier = rightSpeedSupplier;
+        this.leftSpeedSupplier = leftSpeedSupplier;
     }
 
     public void initialize(){
     }
 
     public void execute(){
-        driveTrainSubsystem.tankDrive(leftSpeed, rightSpeed);
+        driveTrainSubsystem.tankDrive(leftSpeedSupplier.get(), rightSpeedSupplier.get());
     }
 
     public void end(boolean interrupted){
