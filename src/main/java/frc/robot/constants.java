@@ -28,7 +28,12 @@ public class constants {
 
 
     }
-
+    public static final class DrivetrainConstants{
+        public static final int rightBackMotor = 40;
+        public static final int rightFrontMotor = 30;
+        public static final int leftBackMotor = 20;
+        public static final int leftFrontMotor = 10;
+    }
     public static final class IntakeConstants{
 
         public static final double motorPort = 0;

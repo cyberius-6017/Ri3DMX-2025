@@ -14,7 +14,9 @@ public class DriveTrainCommand extends Command {
         this.driveTrainSubsystem =  driveTrainSubsystem;
         this.rightSpeedSupplier = rightSpeedSupplier;
         this.leftSpeedSupplier = leftSpeedSupplier;
+        addRequirements(driveTrainSubsystem);
     }
+
 
     public void initialize(){
     }
