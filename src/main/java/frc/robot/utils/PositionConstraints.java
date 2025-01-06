@@ -48,7 +48,7 @@ public class PositionConstraints {
 
                 this.wristPosition = isFrontOriented ? WristConstants.coralPickFrontPosition : WristConstants.coralPickBackPosition;
 
-                this.isIntaking = false;
+                this.isIntaking = true;
 
                 break;
             case ALGAE_PICK_POSITION:
