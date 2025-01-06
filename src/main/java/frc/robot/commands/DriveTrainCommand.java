@@ -17,18 +17,21 @@ public class DriveTrainCommand extends Command {
         addRequirements(driveTrainSubsystem);
     }
 
-
+    @Override
     public void initialize(){
     }
 
+    @Override
     public void execute(){
         driveTrainSubsystem.tankDrive(0.3, 0.3);
     }
 
+    @Override
     public void end(boolean interrupted){
         driveTrainSubsystem.tankDrive(0, 0);
     }
 
+    @Override
     public boolean isFinished(){
         return false;
     }
