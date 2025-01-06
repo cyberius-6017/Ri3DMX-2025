@@ -8,13 +8,16 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.IntakeControlCommand;
 import frc.robot.commands.PivotPercentageCommand;
 import frc.robot.commands.WristPercentageCommand;
 import frc.robot.constants.IOConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.PivotConstants;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Wrist;
@@ -28,6 +31,7 @@ public class RobotContainer {
   private final Pivot pivot;
   private final Intake intake;
   private final Wrist wrist;
+  private final DriveTrain drivetrain = new DriveTrain();
 
   public RobotContainer() {
 
@@ -38,13 +42,18 @@ public class RobotContainer {
 
     driverJoystick = new XboxController(IOConstants.driverJoystickPort);
     placerJoystick = new XboxController(IOConstants.placerJoystickPort);
+    
+    drivetrain.setDefaultCommand(
+      new DriveTrainCommand(drivetrain,() -> driverJoystick.getLeftY(), () -> driverJoystick.getRightX()));
 
     configureBindings();
   }
 
   private void configureBindings() {
 
-    pivot.setDefaultCommand(
+    
+    
+      pivot.setDefaultCommand(
         new PivotPercentageCommand(
             pivot,
             () -> placerJoystick.getRawAxis(0) * PivotConstants.maxPercentageOutput));
@@ -54,6 +63,8 @@ public class RobotContainer {
         wrist, 
         () -> placerJoystick.getRawAxis(0))
     );
+    new JoystickButton(driverJoystick, XboxController.Button.kA.value).onTrue(new InstantCommand(drivetrain::switchInverter));
+
     new GamepadAxisButton(this::leftTriggerThresholdSupplier)
         .whileTrue(
             new IntakeControlCommand(

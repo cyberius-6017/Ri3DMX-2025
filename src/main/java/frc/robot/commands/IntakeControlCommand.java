@@ -21,11 +21,12 @@ public class IntakeControlCommand extends Command{
         this.intake = intake;
     }
 
+    @Override
     public void initialize(){
         intakeSubsystem.stopIntake();
     }
 
-
+    @Override
     public void execute(){
         //Left trigger for reverse intake
         double speed = speedSupplier.get();
@@ -35,10 +36,12 @@ public class IntakeControlCommand extends Command{
 
     }
 
+    @Override
     public void end(boolean interrupted){
         intakeSubsystem.stopIntake();
     }
 
+    @Override
     public boolean isFinished(){
         return false;
     }
