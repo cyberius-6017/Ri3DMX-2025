@@ -29,8 +29,8 @@ public class Robot extends TimedRobot {
     VictorSPX leftBack = new VictorSPX(30);
     VictorSPX leftFront = new VictorSPX(40);
 
-    // SparkMax wristMotor = new SparkMax(7, MotorType.kBrushless);
-    SparkMax intakeMotor = new SparkMax(7, MotorType.kBrushless);
+    SparkMax wristMotor = new SparkMax(8, MotorType.kBrushless);
+    // SparkMax intakeMotor = new SparkMax(7, MotorType.kBrushless);
 
     AbsoluteEncoder absoluteEncoder;
 
@@ -84,19 +84,23 @@ public class Robot extends TimedRobot {
         //     wristMotor.set(control.getRawAxis(5 ) * -0.5);
         // }
 
-        if(control.getRawButton(1)){
-            intakeMotor.set(0.2);
-        } else if(control.getRawButton(2)){
-            intakeMotor.set(0.3);
-        } else if(control.getRawButton(3)){
-            intakeMotor.set(0.4);
-        } else if(control.getRawButton(4)){
-            intakeMotor.set(0.5);
-        } else if(control.getRawButton(5)){
-            intakeMotor.set(0.6);
-        } else {
-            intakeMotor.set(0);
-        }
+        //Intake
+        // if(control.getRawButton(1)){
+        //     intakeMotor.set(0.2);
+        // } else if(control.getRawButton(2)){
+        //     intakeMotor.set(0.3);
+        // } else if(control.getRawButton(3)){
+        //     intakeMotor.set(0.4);
+        // } else if(control.getRawButton(4)){
+        //     intakeMotor.set(0.5);
+        // } else if(control.getRawButton(5)){
+        //     intakeMotor.set(0.6);
+        // } else {
+        //     intakeMotor.set(0);
+        // }
+
+        //WRIST
+        wristMotor.set(control.getRawAxis(1) * 0.4);
 
     }
 
