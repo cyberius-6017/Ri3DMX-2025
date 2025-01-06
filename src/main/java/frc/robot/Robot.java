@@ -83,19 +83,25 @@ public class Robot extends TimedRobot {
         // } else {
         //     wristMotor.set(control.getRawAxis(5 ) * -0.5);
         // }
+        int intake = 1;
 
-        if(control.getRawButton(1)){
-            intakeMotor.set(0.2);
-        } else if(control.getRawButton(2)){
-            intakeMotor.set(0.3);
-        } else if(control.getRawButton(3)){
-            intakeMotor.set(0.4);
-        } else if(control.getRawButton(4)){
-            intakeMotor.set(0.5);
-        } else if(control.getRawButton(5)){
-            intakeMotor.set(0.6);
+        if (control.getRawButton(6)){
+          intake = -1;
         } else {
-            intakeMotor.set(0);
+          intake = 1;
+        }
+        if(control.getRawButton(1)){
+            intakeMotor.set(0.2 * intake);
+        } else if(control.getRawButton(2)){
+            intakeMotor.set(0.3 * intake);
+        } else if(control.getRawButton(3)){
+            intakeMotor.set(0.4 * intake);
+        } else if(control.getRawButton(4)){
+            intakeMotor.set(0.5 * intake);
+        } else if(control.getRawButton(5)){
+            intakeMotor.set(0.6 * intake);
+        } else {
+            intakeMotor.set(-0.05);
         }
 
     }
