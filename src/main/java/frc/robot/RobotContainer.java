@@ -31,13 +31,14 @@ public class RobotContainer {
   private final Pivot pivot;
   private final Intake intake;
   private final Wrist wrist;
-  private final DriveTrain drivetrain = new DriveTrain();
+  private final DriveTrain drivetrain;
 
   public RobotContainer() {
 
     pivot = Pivot.getInstance();
     intake = Intake.getInstance();
     wrist = Wrist.getInstance();
+    drivetrain = DriveTrain.getInstance();
   
 
     driverJoystick = new XboxController(IOConstants.driverJoystickPort);

@@ -19,6 +19,7 @@ public class DriveTrain extends SubsystemBase {
 
     private boolean isInverted = false;
 
+    public static DriveTrain instance;
     
 
     public DriveTrain() {
@@ -31,6 +32,13 @@ public class DriveTrain extends SubsystemBase {
         drivetrain = new DifferentialDrive(leftFront, rightFront);
 
     } 
+
+    public static DriveTrain getInstance(){
+        if(instance == null){
+            instance = new DriveTrain();
+        }
+        return instance;
+    }
     
     public void tankDrive(double forward, double rotation){
         if (isInverted) {
