@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -49,8 +50,8 @@ public class Robot extends TimedRobot {
         leftBack.setInverted(true);
         leftFront.setInverted(true);
 
-        // absoluteEncoder = wristMotor.getAbsoluteEncoder();
-        // relativeEncoder = wristMotor.getEncoder();
+        absoluteEncoder = wristMotor.getAbsoluteEncoder();
+        relativeEncoder = wristMotor.getEncoder();
     }
 
     @Override
@@ -101,7 +102,8 @@ public class Robot extends TimedRobot {
 
         //WRIST
         wristMotor.set(control.getRawAxis(1) * 0.4);
-
+        SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getPosition());
+        SmartDashboard.putNumber("Wrist Relative Encoder", relativeEncoder.getPosition());
     }
 
     @Override
