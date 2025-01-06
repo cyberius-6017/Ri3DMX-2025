@@ -65,7 +65,7 @@ public class RobotContainer {
         () -> placerJoystick.getRawAxis(0))
     );
     */
-   // new JoystickButton(driverJoystick, XboxController.Button.kA.value).onTrue(new InstantCommand(drivetrain::switchInverter));
+    new JoystickButton(driverJoystick, XboxController.Button.kA.value).onTrue(new InstantCommand(drivetrain::switchInverter));
     /* 
     new GamepadAxisButton(this::leftTriggerThresholdSupplier)
         .whileTrue(

@@ -24,10 +24,10 @@ public class DriveTrain extends SubsystemBase {
 
     public DriveTrain() {
 
-        rightBack.setInverted(true);
-        rightFront.setInverted(true);
-        leftBack.setInverted(rightBack.getInverted());
-        leftFront.setInverted(rightBack.getInverted());
+        rightBack.setInverted(false);
+        rightFront.setInverted(false);
+        leftBack.setInverted(!rightBack.getInverted());
+        leftFront.setInverted(!rightBack.getInverted());
 
         
 
@@ -47,11 +47,11 @@ public class DriveTrain extends SubsystemBase {
             
         }
         
-        leftFront.set(VictorSPXControlMode.PercentOutput, 0.3);
-        rightFront.set(VictorSPXControlMode.PercentOutput, 0.3);
+        leftFront.set(VictorSPXControlMode.PercentOutput, left * 0.3);
+        rightFront.set(VictorSPXControlMode.PercentOutput, right * 0.3);
 
-        leftBack.set(VictorSPXControlMode.PercentOutput, 0.3);
-        rightBack.set(VictorSPXControlMode.PercentOutput, 0.3);
+        leftBack.set(VictorSPXControlMode.PercentOutput, left* 0.3);
+        rightBack.set(VictorSPXControlMode.PercentOutput, right * 0.3);
         
     }
 

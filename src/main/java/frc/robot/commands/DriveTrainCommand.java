@@ -23,7 +23,7 @@ public class DriveTrainCommand extends Command {
 
     @Override
     public void execute(){
-        driveTrainSubsystem.tankDrive(0.3, 0.3);
+        driveTrainSubsystem.tankDrive(leftSpeedSupplier.get(), rightSpeedSupplier.get());
     }
 
     @Override
