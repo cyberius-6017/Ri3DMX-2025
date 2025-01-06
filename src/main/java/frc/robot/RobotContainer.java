@@ -34,6 +34,7 @@ public class RobotContainer {
     pivot = Pivot.getInstance();
     intake = Intake.getInstance();
     wrist = Wrist.getInstance();
+  
 
     driverJoystick = new XboxController(IOConstants.driverJoystickPort);
     placerJoystick = new XboxController(IOConstants.placerJoystickPort);
