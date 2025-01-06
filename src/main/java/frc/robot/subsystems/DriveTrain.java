@@ -2,7 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants;
 
@@ -11,11 +12,10 @@ import frc.robot.constants;
 
 public class DriveTrain extends SubsystemBase {
 
-    private final VictorSP rightBack = new VictorSP(constants.DrivetrainConstants.rightBackMotor);
-    private final VictorSP rightFront = new VictorSP(constants.DrivetrainConstants.rightFrontMotor);
-    private final VictorSP leftBack = new VictorSP(constants.DrivetrainConstants.leftBackMotor) ;
-    private final VictorSP leftFront  = new VictorSP(constants.DrivetrainConstants.leftFrontMotor);
-    private final DifferentialDrive drivetrain;
+    private final VictorSPX rightBack = new VictorSPX(constants.DrivetrainConstants.rightBackMotor);
+    private final VictorSPX rightFront = new VictorSPX(constants.DrivetrainConstants.rightFrontMotor);
+    private final VictorSPX leftBack = new VictorSPX(constants.DrivetrainConstants.leftBackMotor) ;
+    private final VictorSPX leftFront  = new VictorSPX(constants.DrivetrainConstants.leftFrontMotor);
 
     private boolean isInverted = false;
 
@@ -29,7 +29,7 @@ public class DriveTrain extends SubsystemBase {
         leftBack.setInverted(rightBack.getInverted());
         leftFront.setInverted(rightBack.getInverted());
 
-        drivetrain = new DifferentialDrive(leftFront, rightFront);
+        
 
     } 
 
@@ -40,17 +40,19 @@ public class DriveTrain extends SubsystemBase {
         return instance;
     }
     
-    public void tankDrive(double forward, double rotation){
+    public void tankDrive(double left, double right){
         if (isInverted) {
-            forward = - forward;
-            rotation = - rotation;
+            left = - left;
+            right = - right;
             
         }
         
-        drivetrain.arcadeDrive(forward, rotation);
+        leftFront.set(VictorSPXControlMode.PercentOutput, 0.3);
+        rightFront.set(VictorSPXControlMode.PercentOutput, 0.3);
 
-        leftBack.set(leftFront.get());
-        rightBack.set(rightFront.get());
+        leftBack.set(VictorSPXControlMode.PercentOutput, 0.3);
+        rightBack.set(VictorSPXControlMode.PercentOutput, 0.3);
+        
     }
 
     public void switchInverter(){

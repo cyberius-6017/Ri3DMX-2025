@@ -22,7 +22,7 @@ public class DriveTrainCommand extends Command {
     }
 
     public void execute(){
-        driveTrainSubsystem.tankDrive(leftSpeedSupplier.get(), rightSpeedSupplier.get());
+        driveTrainSubsystem.tankDrive(0.3, 0.3);
     }
 
     public void end(boolean interrupted){

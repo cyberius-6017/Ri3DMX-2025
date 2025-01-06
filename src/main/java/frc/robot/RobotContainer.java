@@ -45,7 +45,7 @@ public class RobotContainer {
     placerJoystick = new XboxController(IOConstants.placerJoystickPort);
     
     drivetrain.setDefaultCommand(
-      new DriveTrainCommand(drivetrain,() -> driverJoystick.getLeftY(), () -> driverJoystick.getRightX()));
+      new DriveTrainCommand(drivetrain,() -> driverJoystick.getRawAxis(1), () -> driverJoystick.getRawAxis(5)));
 
     configureBindings();
   }
@@ -53,7 +53,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     
-    
+    /* 
       pivot.setDefaultCommand(
         new PivotPercentageCommand(
             pivot,
@@ -64,8 +64,9 @@ public class RobotContainer {
         wrist, 
         () -> placerJoystick.getRawAxis(0))
     );
-    new JoystickButton(driverJoystick, XboxController.Button.kA.value).onTrue(new InstantCommand(drivetrain::switchInverter));
-
+    */
+   // new JoystickButton(driverJoystick, XboxController.Button.kA.value).onTrue(new InstantCommand(drivetrain::switchInverter));
+    /* 
     new GamepadAxisButton(this::leftTriggerThresholdSupplier)
         .whileTrue(
             new IntakeControlCommand(
@@ -79,7 +80,7 @@ public class RobotContainer {
           intake, 
           () -> placerJoystick.getRawAxis(IOConstants.rightTrigger), 
           false)
-      );
+      );*/
   }
 
   public Command getAutonomousCommand() {
