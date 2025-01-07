@@ -45,10 +45,11 @@ public class Robot extends TimedRobot {
 
     SparkMax pivotLeft = new SparkMax(5, MotorType.kBrushless);
     SparkMax pivotRight = new SparkMax(6, MotorType.kBrushless);
+
     SparkMaxConfig pivotRightConfig = new SparkMaxConfig();
     SparkMaxConfig pivotLeftConfig = new SparkMaxConfig();
 
-    AbsoluteEncoder pivotAbsoluteEncoder = pivotLeft.getAbsoluteEncoder();
+    AbsoluteEncoder pivotAbsoluteEncoder;
 
     SparkClosedLoopController pivotPID = pivotLeft.getClosedLoopController();
 
@@ -66,20 +67,24 @@ public class Robot extends TimedRobot {
 
     public Robot() {
 
-        pivotLeftConfig.inverted(true);
+        pivotLeft.clearFaults();
+        pivotRight.clearFaults();
 
+        pivotLeftConfig.inverted(true);
+        
         pivotRightConfig.follow(pivotLeft, true);
 
         pivotLeftConfig.idleMode(IdleMode.kBrake);
         pivotRightConfig.idleMode(IdleMode.kBrake);
 
         pivotLeftConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-                .p(0.0)
-                .d(0.0)
-                .outputRange(-0.5, -0.5);
-
+                .p(0.5)
+                .outputRange(-0.5, 0.5);
+        
+        
         pivotRight.configure(pivotRightConfig, SparkBase.ResetMode.kResetSafeParameters,
                 PersistMode.kNoPersistParameters);
+                
         pivotLeft.configure(pivotLeftConfig, SparkBase.ResetMode.kResetSafeParameters,
                 PersistMode.kNoPersistParameters);
 
@@ -98,11 +103,20 @@ public class Robot extends TimedRobot {
         leftFront.setInverted(true);
 
         wristAbsoluteEncoder = wristMotor.getAbsoluteEncoder();
+        pivotAbsoluteEncoder = pivotLeft.getAbsoluteEncoder();
 
     }
 
     @Override
     public void robotPeriodic() {
+
+        SmartDashboard.putBoolean("IS moving", pivotIsMoving);
+
+        SmartDashboard.putNumber("Pivot Encoder", pivotAbsoluteEncoder.getPosition());
+
+        SmartDashboard.putNumber("PID Output", pivotLeft.getAppliedOutput());
+        SmartDashboard.putNumber("Pivot Goal", pivotGoal);
+
     }
 
     @Override
@@ -122,7 +136,7 @@ public class Robot extends TimedRobot {
     double wristGoal = 0.25;
     
     boolean pivotIsMoving = false;
-    double pivotGoal = 0.25;
+    double pivotGoal = 0.8; // 0.1;
     
 
     @Override
@@ -140,22 +154,26 @@ public class Robot extends TimedRobot {
         // }
 
         // PIVOT
+
+       
+
         if (control.getRawButton(1)) {
 
             pivotIsMoving = true;
-            pivotGoal = 0.25;
-            pivotPID.setReference(0.25, ControlType.kPosition);
+            pivotGoal = 0.8; // 0.1;
             // wristMotor.set(pid.calculate(0.25));
         } else if (control.getRawButton(2)) {
             pivotIsMoving = true;
-            pivotGoal = 0.5;
-            pivotPID.setReference(0.5, ControlType.kPosition);
+            pivotGoal = 0.7; //;
             // wristMotor.set(pid.calculate(0.25));
 
-        } else {
-            // pivotRight.set(control.getRawAxis(1) * 0.4);
-            pivotIsMoving = false;
         }
+        //  else {
+        //     // pivotRight.set(control.getRawAxis(1) * 0.4);
+        //     pivotIsMoving = false;
+        // }
+
+        pivotPID.setReference(pivotGoal, ControlType.kPosition);
         // pivotLeft.set(control.getRawAxis(5) * 0.4);
         // pivotLeft.set(-control.getRawAxis(5) * 0.4);
 
@@ -170,13 +188,13 @@ public class Robot extends TimedRobot {
 
         // WRIST
 
-        SmartDashboard.putNumber("Wrist Absolute Encoder", wristAbsoluteEncoder.getPosition());
-        SmartDashboard.putBoolean("IS moving", wristIsMoving);
+        // SmartDashboard.putNumber("Wrist Absolute Encoder", wristAbsoluteEncoder.getPosition());
+        // SmartDashboard.putBoolean("IS moving", wristIsMoving);
 
-        SmartDashboard.putNumber("Pivot Encoder", pivotAbsoluteEncoder.getPosition());
+        // SmartDashboard.putNumber("Pivot Encoder", pivotAbsoluteEncoder.getPosition());
 
-        SmartDashboard.putNumber("PID Output", wristMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Goal", wristGoal);
+        // SmartDashboard.putNumber("PID Output", wristMotor.getAppliedOutput());
+        // SmartDashboard.putNumber("Goal", wristGoal);
 
         // if (control.getRawButton(1)) {
 
