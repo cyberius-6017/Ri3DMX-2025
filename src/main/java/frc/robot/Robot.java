@@ -4,30 +4,21 @@
 
 package frc.robot;
 
-import java.io.WriteAbortedException;
-
-import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.servohub.ServoHub.ResetMode;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -46,8 +37,12 @@ public class Robot extends TimedRobot {
 
     SparkMax wristMotor = new SparkMax(8, MotorType.kBrushless);
 
-    SparkClosedLoopController pid = wristMotor.getClosedLoopController();
-    
+    SparkMaxConfig wristMotorConfig = new SparkMaxConfig();
+
+    AbsoluteEncoder wristAbsoluteEncoder;
+
+    SparkClosedLoopController wristPID = wristMotor.getClosedLoopController();
+
     SparkMax pivotLeft = new SparkMax(5, MotorType.kBrushless);
     SparkMax pivotRight = new SparkMax(6, MotorType.kBrushless);
     SparkMaxConfig pivotRightConfig = new SparkMaxConfig();
@@ -55,53 +50,55 @@ public class Robot extends TimedRobot {
 
     AbsoluteEncoder pivotAbsoluteEncoder = pivotLeft.getAbsoluteEncoder();
 
+    SparkClosedLoopController pivotPID = pivotLeft.getClosedLoopController();
+
     SparkMax intakeMotor = new SparkMax(7, MotorType.kBrushless);
     // ProfiledPIDController pid = new ProfiledPIDController(1.8, 0, 1.8 , new
     // TrapezoidProfile.Constraints(6, 5));
 
-    AbsoluteEncoder absoluteEncoder;
-
-    RelativeEncoder relativeEncoder;
-
     Joystick control = new Joystick(0);
-
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
 
     /**
      * This function is run when the robot is first started up and should be used
      * for any
      * initialization code.
      */
+
     public Robot() {
 
-       // pivotLeft.setInverted(true);
-        // pivotRight.setInverted(!pivotLeft.getInverted());
         pivotLeftConfig.inverted(true);
-       // pivotLeftConfig.inverted(false);
 
         pivotRightConfig.follow(pivotLeft, true);
 
         pivotLeftConfig.idleMode(IdleMode.kBrake);
         pivotRightConfig.idleMode(IdleMode.kBrake);
-        
-        pivotRight.configure(pivotRightConfig, SparkBase.ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        pivotLeft.configure(pivotLeftConfig, SparkBase.ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        pivotLeftConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .p(0.0)
+                .d(0.0)
+                .outputRange(-0.5, -0.5);
+
+        pivotRight.configure(pivotRightConfig, SparkBase.ResetMode.kResetSafeParameters,
+                PersistMode.kNoPersistParameters);
+        pivotLeft.configure(pivotLeftConfig, SparkBase.ResetMode.kResetSafeParameters,
+                PersistMode.kNoPersistParameters);
+
+        wristMotorConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                 .p(5)
                 .d(0.001)
-                
+
                 .outputRange(-0.5, 0.5);
 
-        wristMotor.configure(motorConfig, SparkBase.ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        wristMotor.configure(wristMotorConfig, SparkBase.ResetMode.kResetSafeParameters,
+                PersistMode.kNoPersistParameters);
 
         rightBack.setInverted(leftBack.getInverted());
         rightFront.setInverted(leftBack.getInverted());
         leftBack.setInverted(true);
         leftFront.setInverted(true);
 
-        absoluteEncoder = wristMotor.getAbsoluteEncoder();
-        relativeEncoder = wristMotor.getEncoder();
+        wristAbsoluteEncoder = wristMotor.getAbsoluteEncoder();
+
     }
 
     @Override
@@ -121,8 +118,12 @@ public class Robot extends TimedRobot {
 
     }
 
-    boolean isMoving = false;
-    double goal = 0.25;
+    boolean wristIsMoving = false;
+    double wristGoal = 0.25;
+    
+    boolean pivotIsMoving = false;
+    double pivotGoal = 0.25;
+    
 
     @Override
     public void teleopPeriodic() {
@@ -137,46 +138,63 @@ public class Robot extends TimedRobot {
         // } else {
         // wristMotor.set(control.getRawAxis(5 ) * -0.5);
         // }
-        
-        pivotLeft.set(control.getRawAxis(5) * 0.4);
-        //pivotLeft.set(-control.getRawAxis(5) * 0.4);
-        // Intake
-        if (control.getRawButton(5)) {
-            intakeMotor.set(-0.35);
-        } else if (control.getRawButton(6)) {
-            intakeMotor.set(0.3);
+
+        // PIVOT
+        if (control.getRawButton(1)) {
+
+            pivotIsMoving = true;
+            pivotGoal = 0.25;
+            pivotPID.setReference(0.25, ControlType.kPosition);
+            // wristMotor.set(pid.calculate(0.25));
+        } else if (control.getRawButton(2)) {
+            pivotIsMoving = true;
+            pivotGoal = 0.5;
+            pivotPID.setReference(0.5, ControlType.kPosition);
+            // wristMotor.set(pid.calculate(0.25));
+
         } else {
-            intakeMotor.set(-0.05);
+            // pivotRight.set(control.getRawAxis(1) * 0.4);
+            pivotIsMoving = false;
         }
+        // pivotLeft.set(control.getRawAxis(5) * 0.4);
+        // pivotLeft.set(-control.getRawAxis(5) * 0.4);
+
+        // Intake
+        // if (control.getRawButton(5)) {
+        // intakeMotor.set(-0.35);
+        // } else if (control.getRawButton(6)) {
+        // intakeMotor.set(0.3);
+        // } else {
+        // intakeMotor.set(-0.05);
+        // }
 
         // WRIST
 
-        SmartDashboard.putNumber("Wrist Absolute Encoder", absoluteEncoder.getPosition());
-        SmartDashboard.putNumber("Wrist Relative Encoder", relativeEncoder.getPosition());
-        SmartDashboard.putBoolean("IS moving", isMoving);
+        SmartDashboard.putNumber("Wrist Absolute Encoder", wristAbsoluteEncoder.getPosition());
+        SmartDashboard.putBoolean("IS moving", wristIsMoving);
 
-        SmartDashboard.putNumber("Pivot Encoder", pivotAbsoluteEncoder.getPosition() );
+        SmartDashboard.putNumber("Pivot Encoder", pivotAbsoluteEncoder.getPosition());
 
         SmartDashboard.putNumber("PID Output", wristMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Goal", goal);
+        SmartDashboard.putNumber("Goal", wristGoal);
 
-        if (control.getRawButton(1)) {
+        // if (control.getRawButton(1)) {
 
-            isMoving = true;
-            goal = 0.25;
-            // pid.setReference(0.25, ControlType.kPosition);
-            // wristMotor.set(pid.calculate(0.25));
-        } else if (control.getRawButton(2)) {
-            goal = 0.5;
-            isMoving = true;
-            // pid.setReference(0.5, ControlType.kPosition);
-            // wristMotor.set(pid.calculate(0.25));
+        // isMoving = true;
+        // goal = 0.25;
+        // // pid.setReference(0.25, ControlType.kPosition);
+        // // wristMotor.set(pid.calculate(0.25));
+        // } else if (control.getRawButton(2)) {
+        // goal = 0.5;
+        // isMoving = true;
+        // // pid.setReference(0.5, ControlType.kPosition);
+        // // wristMotor.set(pid.calculate(0.25));
 
-        } else {
-            wristMotor.set(control.getRawAxis(1) * 0.4);
-            isMoving = false;
-        }
-        //pid.setReference(goal, ControlType.kPosition);
+        // } else {
+        // wristMotor.set(control.getRawAxis(1) * 0.4);
+        // isMoving = false;
+        // }
+        // pid.setReference(goal, ControlType.kPosition);
     }
 
     @Override
